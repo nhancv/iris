@@ -28,3 +28,21 @@ app.get('/', function(req, res) {
 app.listen(port, function() {
   log('Server listening at port %d', port)
 })
+
+/**
+ * Greeting
+ */
+import Greeting from './greeting/'
+app.post('/webhook', (req, res) => {
+  try {
+    console.log(req.body.queryResult)
+    new Greeting()
+    .initConversation()
+    .then((output) => {
+      res.json({ fulfillmentText: output })
+    })
+    
+  } catch (error) {
+    console.error(error)
+  }
+})
