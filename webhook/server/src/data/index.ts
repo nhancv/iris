@@ -64,23 +64,24 @@ export default class Data {
   getPriceRange() {
     let res = []
     for (var p of this.PRICE_RANGE) {
-      res.push(p.text)
+      res.push(`Gói ${p.text}`)
     }
     return res
   }
 
   getFloors() {
-    let res = []
-    for(var r in this.ROOM_INFO) {
-      res.push(r["floor"])
+    let res: number[] = []
+    for (var r in this.ROOM_INFO) {
+      res.push(`Tầng ${this.ROOM_INFO[r]['floor']}`)
     }
+    return res
   }
 
   getDirections() {
     let res = []
-    for(var r in this.ROOM_INFO) {
-      res.push(r["direction"])
+    for (var r in this.ROOM_INFO) {
+      res.push(`Hướng ${this.ROOM_INFO[r]['direction']}`)
     }
+    return res
   }
-
 }

@@ -35,13 +35,13 @@ app.listen(port, function() {
 import Greeting from './greeting/'
 app.post('/webhook', (req, res) => {
   try {
-    // console.log(req.body.queryResult)
-    new Greeting()
-    .initConversation()
-    .then((output) => {
-      res.json(output)
-    })
-    
+    let intent = req.body.queryResult.intent
+    console.log(intent)
+    if (intent.displayName == 'begin') {
+      new Greeting().initConversation().then(output => {
+        res.json(output)
+      })
+    }
   } catch (error) {
     console.error(error)
   }
