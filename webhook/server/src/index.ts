@@ -16,7 +16,10 @@ app.use(cors())
 app.use(cookieParser())
 
 // For fontend route
-var frontendDir = path.join(path.dirname(path.dirname(__dirname)), 'frontend')
+// var frontendDir = path.join(path.dirname(path.dirname(__dirname)), 'frontend')
+
+// For heroku
+var frontendDir = path.join(path.dirname(__dirname), 'frontend')
 app.use('/home', express.static(path.join(frontendDir, 'build')))
 app.get('/home', function(req, res) {
   res.sendFile(path.join(frontendDir, 'build', 'index.html'))
@@ -72,7 +75,7 @@ app.post('/webhook', (req: any, res: any) => {
       } else {
         let card: any = {
           title: `Bạn vừa chọn căn hộ ${apartment.id}. Bạn chắc chứ?`,
-          subtitle: `Căn hộ ${apartment.id}, giá: ${apartment.price}, hướng ${apartment.direction}`,
+          subtitle: `Căn hộ ${apartment.id}, ${apartment.price} triệu/tháng, hướng ${apartment.direction}`,
           imageUri: apartment.img,
           buttons: [
             {
@@ -90,6 +93,28 @@ app.post('/webhook', (req: any, res: any) => {
         })
         res.json({ fulfillmentMessages })
       }
+    } else if (intent.displayName == 'complete') {
+      res.json({
+        fulfillmentMessages: [
+          {
+            text: {
+              text: ['Chúc mừng bạn. Đội ngũ quản lý sẽ liên hệ sớm nhất có thể.']
+            }
+          },
+          {
+            text: {
+              text: [
+                'Celadon city là một môi trường sống đầy cây xanh, không khí trong lành mát mẻ, đội ngũ quản lý kinh nghiệm và rất chú trọng chăm lo cho cư dân. Hy vọng bạn sẽ là một thành viên của chúng tôi trong nay mai. Thân ái, chào bạn ạ.'
+              ]
+            }
+          },
+          {
+            image: {
+              imageUri: 'https://drive.google.com/uc?id=1HvYlKFcRNn3OZ9eM9ZDJC-Vr20ElfwLy'
+            }
+          }
+        ]
+      })
     } else {
       filters[session] = {}
       new Greeting().initConversation(db).then(output => {
