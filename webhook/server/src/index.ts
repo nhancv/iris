@@ -45,28 +45,56 @@ app.post('/webhook', (req: any, res: any) => {
     }
 
     let intent = form.intent
-    if (intent.displayName == 'begin') {
-      new Greeting().initConversation(db).then(output => {
-        res.json(output)
-      })
-    } else if (intent.displayName == 'floor') {
+    if (intent.displayName == 'floor') {
       let floor = form.parameters.number
       filters[session].floor = floor
 
       db.checkFilterAndGetResult(filters[session], res)
-      
     } else if (intent.displayName == 'budget') {
       let budget = form.parameters.budget
       filters[session].price = db.getPriceIndex(budget)
 
       db.checkFilterAndGetResult(filters[session], res)
-      
     } else if (intent.displayName == 'direction') {
       let direction = form.parameters.direction
       filters[session].direction = direction
 
       db.checkFilterAndGetResult(filters[session], res)
-      
+    } else if (intent.displayName == 'reset') {
+      filters[session] = {}
+      db.checkFilterAndGetResult(filters[session], res)
+    } else if (intent.displayName == 'decision') {
+      filters[session] = {}
+      let apartment = db.getRoomInfo(form.parameters.apartment)
+
+      if (apartment == null) {
+        db.checkFilterAndGetResult(filters[session], res, true)
+      } else {
+        let card: any = {
+          title: `Bạn vừa chọn căn hộ ${apartment.id}. Bạn chắc chứ?`,
+          subtitle: `Căn hộ ${apartment.id}, giá: ${apartment.price}, hướng ${apartment.direction}`,
+          imageUri: apartment.img,
+          buttons: [
+            {
+              text: 'Tôi chắc chắn'
+            },
+            {
+              text: 'Tôi muốn chọn lại'
+            }
+          ]
+        }
+
+        let fulfillmentMessages = []
+        fulfillmentMessages.push({
+          card: card
+        })
+        res.json({ fulfillmentMessages })
+      }
+    } else {
+      filters[session] = {}
+      new Greeting().initConversation(db).then(output => {
+        res.json(output)
+      })
     }
   } catch (error) {
     console.error(error)

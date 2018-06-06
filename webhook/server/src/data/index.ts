@@ -4,32 +4,38 @@ export default class Data {
     A101: {
       floor: 1,
       price: 5,
-      direction: 'Đông'
+      direction: 'Đông',
+      img: 'https://drive.google.com/uc?id=1LBIb8wdsQF-Ojx3VrIBHCqJ_NhUejHKV'
     },
     A102: {
       floor: 1,
-      price: 5,
-      direction: 'Đông'
+      price: 6,
+      direction: 'Đông',
+      img: 'https://drive.google.com/uc?id=15Gt_QZFVfVyaGgr6izuRw9o9zcX-jfJ4'
     },
     A201: {
       floor: 2,
       price: 3,
-      direction: 'Tây'
+      direction: 'Tây',
+      img: 'https://drive.google.com/uc?id=1kV8mRXpMkzhpVHaKEm_jS35CVtrU0xTg'
     },
     A303: {
       floor: 3,
       price: 4,
-      direction: 'Nam'
+      direction: 'Nam',
+      img: 'https://drive.google.com/uc?id=1ERRll2P38UYxQUwpsPypsT40u1pT1Fn_'
     },
     A504: {
       floor: 5,
       price: 9,
-      direction: 'Đông'
+      direction: 'Đông',
+      img: 'https://drive.google.com/uc?id=1hfU-mVvau2pbjhZnPXH6pZhgcRVFZufX'
     },
     A609: {
       floor: 6,
       price: 7,
-      direction: 'Tây'
+      direction: 'Tây',
+      img: 'https://drive.google.com/uc?id=1xMY_MLx9ioL9VB_iviymgU4Qt4Cqa-tv'
     }
   }
 
@@ -40,17 +46,24 @@ export default class Data {
       to: 5
     },
     {
-      text: '6tr-7tr',
-      from: 6,
+      text: '5tr-7tr',
+      from: 5,
       to: 7
     },
     {
-      text: 'Trên 7tr',
+      text: 'trên 7tr',
       from: 7,
       to: 1000
     }
   ]
-
+  getRoomInfo(roomId: string) {
+    return this.ROOM_INFO.hasOwnProperty(roomId)
+      ? {
+          ...this.ROOM_INFO[roomId],
+          id: roomId
+        }
+      : null
+  }
   getPriceIndex(text: string) {
     for (var i in this.PRICE_RANGE) {
       if (this.PRICE_RANGE[i].text == text) {
@@ -59,8 +72,7 @@ export default class Data {
     }
     return -1
   }
-  checkFilterAndGetResult(filterInfo: any, response: any) {
-    console.log(filterInfo)
+  checkFilterAndGetResult(filterInfo: any, response: any, emptyBefore: boolean = false) {
     let listTemp = this.getResult(filterInfo)
     let card = this.getRandomNext(filterInfo)
     if (card == null || listTemp.length == 1) {
@@ -93,6 +105,10 @@ export default class Data {
             postback: ''
           })
         }
+        card.buttons.push({
+          text: 'Chọn lại'
+        })
+
         response.json({
           fulfillmentMessages: [
             {
@@ -102,11 +118,18 @@ export default class Data {
         })
       }
     } else {
-      let fulfillmentMessages = [
-        {
-          card: card
-        }
-      ]
+      let fulfillmentMessages = []
+      if (emptyBefore) {
+        fulfillmentMessages.push({
+          text: {
+            text: ['Iris không tìm thấy căn bạn đưa ra ạ. Bạn chọn lại nhé.']
+          }
+        })
+      }
+      fulfillmentMessages.push({
+        card: card
+      })
+
       response.json({ fulfillmentMessages })
     }
   }
@@ -130,7 +153,7 @@ export default class Data {
         filterInfo.hasOwnProperty('price') &&
         filterInfo.price != -1 &&
         (this.ROOM_INFO[room].price < this.PRICE_RANGE[filterInfo.price].from ||
-          this.ROOM_INFO[room].price > this.PRICE_RANGE[filterInfo.price].to)
+          this.ROOM_INFO[room].price >= this.PRICE_RANGE[filterInfo.price].to)
       )
         return false
       if (
@@ -203,9 +226,7 @@ export default class Data {
           for (let p of this.PRICE_RANGE) {
             let c = false
             for (let r of list) {
-              if (
-                this.ROOM_INFO[r].price >= p.from && this.ROOM_INFO[r].price <= p.to
-              ) {
+              if (this.ROOM_INFO[r].price >= p.from && this.ROOM_INFO[r].price < p.to) {
                 c = true
                 break
               }
