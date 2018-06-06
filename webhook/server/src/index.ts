@@ -35,11 +35,11 @@ app.listen(port, function() {
 import Greeting from './greeting/'
 app.post('/webhook', (req, res) => {
   try {
-    console.log(req.body.queryResult)
+    // console.log(req.body.queryResult)
     new Greeting()
     .initConversation()
     .then((output) => {
-      res.json({ fulfillmentText: output })
+      res.json(output)
     })
     
   } catch (error) {
