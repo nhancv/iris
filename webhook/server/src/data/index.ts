@@ -10,7 +10,7 @@ export default class Data {
     A102: {
       floor: 1,
       price: 6,
-      direction: 'Đông',
+      direction: 'Tây',
       img: 'https://drive.google.com/uc?id=15Gt_QZFVfVyaGgr6izuRw9o9zcX-jfJ4'
     },
     A201: {
